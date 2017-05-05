@@ -33,26 +33,14 @@ func re_groups(re *regexp.Regexp, text string, group int) []string {
 }
 
 func list_naver() []string {
-	s, err := slurp("http://www.naver.com")
+	s, err := slurp("https://www.naver.com")
 	if err != nil {
 		return nil
 	}
 	return re_groups(
-		regexp.MustCompile("<option value=\".+\">.+: (.+)</option>"),
+		regexp.MustCompile("<span class=\"ah_k\">(.+?)</span>\n</a>\n</li>"),
 		s,
 		1)
-}
-
-func removeDuplicate(a []string) []string {
-	result := []string{}
-	found := make(map[string]bool)
-	for _, v := range a {
-		if !found[v] {
-			found[v] = true
-			result = append(result, v)
-		}
-	}
-	return result
 }
 
 func list_daum() []string {
@@ -60,11 +48,10 @@ func list_daum() []string {
 	if err != nil {
 		return nil
 	}
-	return removeDuplicate(
-		re_groups(
-			regexp.MustCompile("<span class=\"txt_issue\">\n.+\n(<.+>)?(.+?)(<.+>)?\n"),
+	return re_groups(
+			regexp.MustCompile("class=\"link_issue\">(.+?)</a>"),
 			s,
-			2))
+			1)
 }
 
 func main() {
