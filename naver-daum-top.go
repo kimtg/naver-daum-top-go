@@ -32,26 +32,26 @@ func re_groups(re *regexp.Regexp, text string, group int) []string {
 	return result
 }
 
-func list_naver() []string {
+func list_naver() ([]string, error) {
 	s, err := slurp("https://www.naver.com")
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	return re_groups(
 		regexp.MustCompile("<span class=\"ah_k\">(.+?)</span>\n</a>\n</li>"),
 		s,
-		1)
+		1), nil
 }
 
-func list_daum() []string {
+func list_daum() ([]string, error) {
 	s, err := slurp("http://www.daum.net")
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	return re_groups(
 			regexp.MustCompile("class=\"link_issue\">(.+?)</a>"),
 			s,
-			1)
+			1), nil
 }
 
 func main() {
@@ -59,8 +59,17 @@ func main() {
 	fmt.Println("Refreshes every", interval, "minutes.")
 	for {
 		fmt.Println(time.Now())
-		fmt.Println("Naver:", strings.Join(list_naver(), ", "))
-		fmt.Println("Daum:", strings.Join(list_daum(), ", "))
+		if list, err := list_naver(); err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("Naver:", strings.Join(list, ", "))
+		}
+
+		if list, err := list_daum(); err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("Daum:", strings.Join(list, ", "))
+		}
 		time.Sleep(interval * time.Minute)
 	}
 }
