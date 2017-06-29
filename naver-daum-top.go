@@ -49,9 +49,9 @@ func list_daum() ([]string, error) {
 		return nil, err
 	}
 	return re_groups(
-			regexp.MustCompile("class=\"link_issue\">(.+?)</a>"),
-			s,
-			1), nil
+		regexp.MustCompile("class=\"link_issue\" tabindex.*?>(.+?)</a>"),
+		s,
+		1), nil
 }
 
 func main() {
