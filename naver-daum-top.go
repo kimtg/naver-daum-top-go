@@ -23,7 +23,7 @@ func slurp(url string) (string, error) {
 }
 
 // return all specific groups
-func re_groups(re *regexp.Regexp, text string, group int) []string {
+func reGroups(re *regexp.Regexp, text string, group int) []string {
 	result := []string{}
 	found := re.FindAllStringSubmatch(text, -1)
 	for _, v := range found {
@@ -32,26 +32,13 @@ func re_groups(re *regexp.Regexp, text string, group int) []string {
 	return result
 }
 
-func list_naver() ([]string, error) {
-	s, err := slurp("https://www.naver.com")
+func printReGroupsSlurp(title, url, re string, group int) {
+	s, err := slurp(url)
 	if err != nil {
-		return nil, err
+		fmt.Println(err)
+	} else {
+		fmt.Println(title, strings.Join(reGroups(regexp.MustCompile(re), s, group), ", "))
 	}
-	return re_groups(
-		regexp.MustCompile("<span class=\"ah_k\">(.+?)</span>\n</a>\n</li>"),
-		s,
-		1), nil
-}
-
-func list_daum() ([]string, error) {
-	s, err := slurp("http://www.daum.net")
-	if err != nil {
-		return nil, err
-	}
-	return re_groups(
-		regexp.MustCompile("class=\"link_issue\" tabindex.*?>(.+?)</a>"),
-		s,
-		1), nil
 }
 
 func main() {
@@ -59,17 +46,8 @@ func main() {
 	fmt.Println("Refreshes every", interval, "minutes.")
 	for {
 		fmt.Println(time.Now())
-		if list, err := list_naver(); err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println("Naver:", strings.Join(list, ", "))
-		}
-
-		if list, err := list_daum(); err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println("Daum:", strings.Join(list, ", "))
-		}
+		printReGroupsSlurp("Naver:", "https://www.naver.com", "<span class=\"ah_k\">(.+?)</span>\n</a>\n</li>", 1)
+		printReGroupsSlurp("Daum:", "http://www.daum.net", "class=\"link_issue\" tabindex.*?>(.+?)</a>", 1)
 		time.Sleep(interval * time.Minute)
 	}
 }
