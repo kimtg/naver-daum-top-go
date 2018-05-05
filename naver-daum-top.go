@@ -15,10 +15,10 @@ func slurp(url string) (string, error) {
 		return "", err
 	}
 	body, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
 	if err != nil {
 		return "", err
 	}
-	res.Body.Close()
 	return string(body), nil
 }
 
