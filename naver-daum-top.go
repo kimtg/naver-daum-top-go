@@ -46,7 +46,7 @@ func main() {
 	fmt.Println("Refreshes every", interval, "minutes.")
 	for {
 		fmt.Println(time.Now())
-		printReGroupsSlurp("Naver:", "https://www.naver.com", "<span class=\"ah_k\">(.+?)</span>\n</a>\n</li>", 1)
+		printReGroupsSlurp("Naver:", "https://datalab.naver.com/keyword/realtimeList.naver", "<span class=\"item_title\">(.+?)</span>", 1)
 		printReGroupsSlurp("Daum:", "http://www.daum.net", "class=\"link_issue\" tabindex.*?>(.+?)</a>", 1)
 		time.Sleep(interval * time.Minute)
 	}
